@@ -1,0 +1,24 @@
+{
+  "name": "helios-chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/helioschat.min.js",
+  "scripts": {
+    "build": "rollup -c -o dist/helioschat.min.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-react": "^6.24.1",
+    "classnames": "^2.2.5",
+    "d3": "^5.9.1",
+    "postcss-modules": "^1.1.0",
+    "react": "^16.3.2",
+    "rollup": "^0.58.2",
+    "rollup-plugin-babel": "^3.0.4",
+    "rollup-plugin-postcss": "^1.6.1",
+    "rollup-plugin-uglify": "^3.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
