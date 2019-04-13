@@ -17,6 +17,11 @@ class Sidebar extends Component {
           <li>
             <Link to="/tree">Tree Map</Link>
           </li>
+          <li>
+            <Link to="/calenderview">Calendar View</Link>
+            <Link to="/datagrid">Data Grid</Link>
+            <Link to="/Pie">Pie</Link>
+          </li>
         </ul>
 
         </div>
