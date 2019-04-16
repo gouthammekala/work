@@ -4,16 +4,18 @@ import ReactDataGrid from "react-data-grid";
 import CustomRowRenderer from './CustomRowRenderer';
 // import { Menu } from "react-data-grid-addons";
 import ReactDOM from 'react-dom';
+import createRowData from "./createRowData";
+import { Menu,Data } from "react-data-grid-addons";
 
-  import { Menu,Data } from "react-data-grid-addons";
   const { ContextMenu, MenuItem, SubMenu, ContextMenuTrigger } = Menu;
   var scrolloffset=150; 
 const defaultColumnProperties = {
-    // resizable: true,
-    frozen: true,
+    resizable: true,
+    // frozen: true,
     width: 120
   };
-   
+  const ROW_COUNT = 50;
+  /*
 const columns = [
   { key: "id", name: "ID", frozen: true,sortDescendingFirst: true,headerRenderer:<ContextMenuTrigger id="some_unique_identifier">
   <div className="well">ID</div>
@@ -25,7 +27,56 @@ const columns = [
 ].map(c => ({ 
     ...c, // ...defaultColumnProperties 
 }));
+*/
 
+
+const columns = [
+  {
+    key: "id",
+    name: "ID"
+  },
+  {
+    key: "firstName",
+    name: "First Name"
+  },
+  {
+    key: "lastName",
+    name: "Last Name"
+  },
+  {
+    key: "jobTitle",
+    name: "Job Title"
+  },
+  {
+    key: "jobArea",
+    name: "Job Area"
+  },
+  {
+    key: "jobType",
+    name: "Job Type"
+  },
+  {
+    key: "email",
+    name: "Email"
+  },
+  {
+    key: "street",
+    name: "Street"
+  },
+  {
+    key: "zipCode",
+    name: "ZipCode"
+  },
+  {
+    key: "date",
+    name: "Date"
+  },
+  {
+    key: "catchPhrase",
+    name: "Catch Phrase"
+  }
+].map(c => ({ ...c, ...defaultColumnProperties }));
+/*
 const rows = [
   { id: 0, title: "Task 1", complete: 20 },
   { id: 1, title: "Task 2", complete: 30 },
@@ -37,11 +88,14 @@ const rows = [
   
   
 ];
+*/
+const rows= createRowData(ROW_COUNT);
+console.log(rows);
 for (let i=0;i<1000000;i++) {
   //rows.push({ id: 2, title: "Task 3", complete: 60 });
 }
 class datagridV extends Component {
-  state = { rows };
+  state = { rows,expandedRows:{} };
 
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
     this.setState(state => {
@@ -58,6 +112,9 @@ constructor(props) {
     this.handleGridSort = this.handleGridSort.bind(this);
     this.ExampleContextMenu = this.ExampleContextMenu.bind(this);
     this.onScroll = this.onScroll.bind(this);
+    this.getSubRowDetails = this.getSubRowDetails.bind(this);
+    this.onCellExpand = this.onCellExpand.bind(this);
+
 }
 
 componentDidUpdate() {
@@ -156,6 +213,71 @@ ExampleContextMenu() {
 </ContextMenu>);
 }
 
+getSubRowDetails(rowItem)  {
+  console.log(rowItem.treeDepth);
+  const isExpanded = this.state.expandedRows[rowItem.id]
+  ? this.state.expandedRows[rowItem.id]
+  : false;
+  return {
+    group: rowItem.teamMembers && rowItem.teamMembers.length > 0,
+    expanded: isExpanded,
+    children: rowItem.teamMembers,
+    field: "firstName",
+    // treeDepth: rowItem.treeDepth || 1,
+    siblingIndex: rowItem.siblingIndex,
+    numberSiblings: rowItem.numberSiblings
+  };
+  /*
+  let isExpanded = this.state.expanded[rowItem.site] ? this.state.expanded[rowItem.site] : false;
+  return {
+      group: rowItem.children && rowItem.children.length > 0,
+      expanded: isExpanded,
+      children: rowItem.children,
+      field: ['site' , 'projects'],
+      treeDepth: rowItem.treeDepth || 0,
+      siblingIndex: rowItem.siblingIndex,
+      numberSiblings: rowItem.numberSiblings
+  };
+  */
+ /*
+
+ const isExpanded = expandedRows[rowItem.id]
+    ? expandedRows[rowItem.id]
+    : false;
+  return {
+    group: rowItem.teamMembers && rowItem.teamMembers.length > 0,
+    expanded: isExpanded,
+    children: rowItem.teamMembers,
+    field: "firstName",
+    treeDepth: rowItem.treeDepth || 0,
+    siblingIndex: rowItem.siblingIndex,
+    numberSiblings: rowItem.numberSiblings
+  };
+ */
+}
+
+onCellExpand(args) {
+  console.log('args',args);
+
+  const rowKey = args.rowData.id;
+  const rowIndex = this.state.rows.indexOf(args.rowData);
+  
+  const subRows = args.expandArgs.children;
+  
+  if (this.state.expandedRows && !this.state.expandedRows[rowKey]) {
+    this.state.expandedRows[rowKey] = true;
+    //updateSubRowDetails(subRows, args.rowData.treeDepth);
+    rows.splice(rowIndex + 1, 0, ...subRows);
+  } else if (this.state.expandedRows[rowKey]) {
+    this.state.expandedRows[rowKey] = false;
+    rows.splice(rowIndex + 1, subRows.length);
+  }
+  console.log(this.state.expandedRows,rows);
+  const expandedRows = this.state.expandedRows;
+  this.setState({rows,expandedRows});
+  // return {rows };
+  
+}
   //i => this.state.rows[i]
   render() {
     
@@ -170,8 +292,8 @@ ExampleContextMenu() {
         columns={columns}
         rowGetter={i=>groupedRows[i]}
         rowsCount={groupedRows.length}
-        minHeight={200}
-        minWidth={200}
+        minHeight={800}
+        minWidth={800}
         // minColumnWidth={50}
         // onGridRowsUpdated={this.onGridRowsUpdated}  // totla numer of rows*35 - mimum height
         enableCellSelect={true}
@@ -186,6 +308,10 @@ ExampleContextMenu() {
             console.log(`Column ${idx} has been resized to ${width}`)
           }
           rowHeight={50}
+          getSubRowDetails={this.getSubRowDetails}
+          onCellExpand={(args)=>this.onCellExpand(args)}
+
+          
 
       />
       </div>
